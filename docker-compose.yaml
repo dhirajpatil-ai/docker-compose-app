@@ -1,0 +1,41 @@
+services:
+    mysql:
+        build:
+            context: ./mysql
+        container_name: mysql-db
+        restart: always
+
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+        volumes:
+            - mysql-data:/var/lib/mysql
+
+        networks:
+            - app-network
+
+    python:
+        build:
+            context: ./python
+        container_name: flask-app
+
+        ports:
+            - "8000:5000"
+        environment:
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+        depends_on:
+            - mysql
+        
+        networks:
+            - app-network
+
+volumes:
+    mysql-data:
+    
+networks:
+    app-network:
